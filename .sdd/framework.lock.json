@@ -1,0 +1,25 @@
+{
+  "artifact_contract_id": "ARTIFACT-CONTRACT-001",
+  "artifact_contract_version": 1,
+  "framework_repository": "https://github.com/naelmusleh/adversarial-sdd-boilerplate",
+  "framework_revision": "484c4cc3c7d1c0962439d11197fc09473845c163",
+  "gate_contract_id": "FRAMEWORK-GATE-CONTRACT-001",
+  "gate_contract_version": "1.2",
+  "lock_version": 4,
+  "locked_files": {
+    ".github/workflows/sdd-contract-validation.yml": "sha256:fae574eedcb8681375e1ad95546feb6e810a7dd1bb2872f79aa55a2d9a19c02a",
+    ".sdd/G-ARCH-CONTRACT.json.template": "sha256:4ba8a4c7fe8c9f8c6b5252f4f99d1b0fa61bf98a67419c8e1938e902520026db",
+    ".sdd/G-REQ-HANDOFF.json.template": "sha256:66cad7bb7e753d7ff6d7ebbad8034af5163342b0cc113eb10da7cdbd9e5e667e",
+    ".sdd/gate-run-v1.2.json.template": "sha256:a3af842e04f130cb069531d4b60f4b3fdf94fbf4b17d8062cd8942ce59b1321f",
+    ".sdd/gate-run-v1.json.template": "sha256:a2e90be7fa5291ad2ac9966b155b9cf936725bcf2ca649f5326ccf17cbdd61b9",
+    ".sdd/required-checks.json.template": "sha256:b7e3629fadb54f342c1a21ab3620e793971cec55783de6f9ea2d60a9a232f13a",
+    ".sdd/schemas/gate-run-v1.2.schema.json": "sha256:12988ef49d14c1b1cfcfa8106b74ec98db90f62f108bb61deb046046b47e36e7",
+    ".sdd/schemas/gate-run-v1.schema.json": "sha256:90d8aa4a766d6641b2f07f114d7a806a8e81b472367db54627e4e24fccc0e0a4",
+    ".sdd/schemas/required-checks-v1.schema.json": "sha256:3f2c7eaad00772089f1d2107eb92a3430ee68439a66e3e7e6673647fb977c87d",
+    ".sdd/schemas/trusted-ci-v1.schema.json": "sha256:054ea37153aacf779a10e7c8153f21f55358a57151cb186b508d6e401dd52b92",
+    ".sdd/trusted-ci.json.template": "sha256:d451acb771576c53cce50b61ba6c191bfabca388258e59497baba93fe6b40511",
+    "docs/templates/app-project/gate-record.md.template": "sha256:d02e7abe48123f1d22f631721d383d5ec5ccbcec8c4b3eefc9932ef9132aa437",
+    "scripts/artifacts.py": "sha256:4f9c80e906b0dbe8010b9a13c57705c2f1ba7a8f2aabdabadd685a5a9ccc37a6",
+    "scripts/ci_checks.py": "sha256:058bead3e2df4d3065cf2ea20853611a6a4e239ae848045ed9e303764e0fc3ed"
+  }
+}

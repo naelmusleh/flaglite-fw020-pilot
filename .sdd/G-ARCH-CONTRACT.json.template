@@ -1,0 +1,57 @@
+{
+  "contract_id": "G-ARCH-CONTRACT-001",
+  "contract_version": 1,
+  "framework_revision": "484c4cc3c7d1c0962439d11197fc09473845c163",
+  "source_gate": "G-ARCH",
+  "scope": "<approved architecture scope and supported platforms>",
+  "frozen_artifacts": [
+    {
+      "path": "specification.md",
+      "id": "FLAGLITE-SPEC-001",
+      "version": "<artifact version>",
+      "sha256": "sha256:<64 lowercase hexadecimal characters>"
+    },
+    {
+      "path": "design.md",
+      "id": "FLAGLITE-DESIGN-001",
+      "version": "<artifact version>",
+      "sha256": "sha256:<64 lowercase hexadecimal characters>"
+    },
+    {
+      "path": "backlog.md",
+      "id": "FLAGLITE-BACKLOG-001",
+      "version": "<artifact version>",
+      "sha256": "sha256:<64 lowercase hexadecimal characters>"
+    }
+  ],
+  "contract_file": {
+    "path": "packages/contracts/openapi.json",
+    "sha256": "sha256:<64 lowercase hexadecimal characters>"
+  },
+  "required_checks": [
+    {
+      "id": "CHECK-API-001",
+      "command": "<exact local verification command>",
+      "assertions": [
+        "<observable behavior tied to an approved requirement>"
+      ]
+    }
+  ],
+  "review_inputs": [
+    {
+      "purpose": "historical-rule-index",
+      "path": "<repository-relative policy or evidence path>",
+      "id": "FLAGLITE-POLICY-001",
+      "version": "<artifact version>",
+      "sha256": "sha256:<64 lowercase hexadecimal characters>"
+    }
+  ],
+  "independent_review": {
+    "path": "reviews/FLAGLITE-REVIEW-ARCH-001.md",
+    "id": "FLAGLITE-REVIEW-ARCH-001",
+    "version": "<review version>",
+    "sha256": "sha256:<64 lowercase hexadecimal characters>",
+    "reviewer_mode": "independent",
+    "result": "PASS"
+  }
+}

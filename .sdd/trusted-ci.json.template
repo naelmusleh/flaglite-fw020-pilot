@@ -1,0 +1,9 @@
+{
+  "policy_version": 1,
+  "status": "unconfigured",
+  "provider": "github-actions",
+  "repository": null,
+  "protected_ref": null,
+  "signer_workflow": "naelmusleh/adversarial-sdd-boilerplate/.github/workflows/sdd-trusted-ci-attest.yml",
+  "signer_digest": "484c4cc3c7d1c0962439d11197fc09473845c163"
+}

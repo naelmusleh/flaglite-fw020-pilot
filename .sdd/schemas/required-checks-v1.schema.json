@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/naelmusleh/adversarial-sdd-boilerplate/blob/main/docs/framework/schemas/required-checks-v1.schema.json",
+  "title": "App-specific required check manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["manifest_version", "status", "checks"],
+  "properties": {
+    "manifest_version": { "const": 1 },
+    "status": { "enum": ["unconfigured", "active"] },
+    "checks": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/check" }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "active" } }, "required": ["status"] },
+      "then": { "properties": { "checks": { "minItems": 1 } } }
+    },
+    {
+      "if": { "properties": { "status": { "const": "unconfigured" } }, "required": ["status"] },
+      "then": { "properties": { "checks": { "maxItems": 0 } } }
+    }
+  ],
+  "$defs": {
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "check_id", "execution", "required", "task_ids", "acceptance_criteria",
+        "platforms", "command_or_procedure", "runtime_probe", "scope_paths",
+        "pass_condition", "evidence_location"
+      ],
+      "properties": {
+        "check_id": { "type": "string", "pattern": "^[A-Z0-9][A-Z0-9._-]{1,63}$" },
+        "execution": { "enum": ["ci", "manual"] },
+        "required": { "type": "boolean" },
+        "task_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "acceptance_criteria": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "platforms": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "command_or_procedure": { "type": ["string", "null"] },
+        "runtime_probe": { "type": ["string", "null"] },
+        "scope_paths": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "pass_condition": { "type": "string", "minLength": 1 },
+        "evidence_location": { "type": "string", "minLength": 1 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "execution": { "const": "ci" } }, "required": ["execution"] },
+          "then": {
+            "properties": {
+              "command_or_procedure": { "type": "string", "minLength": 1 },
+              "runtime_probe": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "execution": { "const": "manual" } }, "required": ["execution"] },
+          "then": {
+            "properties": {
+              "command_or_procedure": { "type": "string", "minLength": 1 },
+              "runtime_probe": { "type": "null" }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

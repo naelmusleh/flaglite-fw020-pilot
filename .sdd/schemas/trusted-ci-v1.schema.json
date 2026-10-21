@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/naelmusleh/adversarial-sdd-boilerplate/blob/main/docs/framework/schemas/trusted-ci-v1.schema.json",
+  "title": "App trusted CI attestation policy",
+  "type": "object",
+  "additionalProperties": false,
+    "required": ["policy_version", "status", "provider", "repository", "protected_ref", "signer_workflow", "signer_digest"],
+  "properties": {
+    "policy_version": { "const": 1 },
+    "status": { "enum": ["unconfigured", "active"] },
+    "provider": { "const": "github-actions" },
+    "repository": { "type": ["string", "null"], "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$" },
+    "protected_ref": { "type": ["string", "null"], "pattern": "^refs/heads/[A-Za-z0-9._/-]+$" },
+    "signer_workflow": { "const": "naelmusleh/adversarial-sdd-boilerplate/.github/workflows/sdd-trusted-ci-attest.yml" },
+    "signer_digest": { "type": "string", "pattern": "^[a-f0-9]{40}$" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "active" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "repository": { "type": "string" },
+          "protected_ref": { "type": "string" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "unconfigured" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "repository": { "type": "null" },
+          "protected_ref": { "type": "null" }
+        }
+      }
+    }
+  ]
+}

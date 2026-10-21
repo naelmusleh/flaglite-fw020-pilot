@@ -1,0 +1,41 @@
+{
+  "contract_id": "G-REQ-HANDOFF-001",
+  "contract_version": 1,
+  "framework_revision": "484c4cc3c7d1c0962439d11197fc09473845c163",
+  "source_gate": "G-REQ",
+  "scope": "<approved requirement scope and platform set>",
+  "frozen_artifacts": [
+    {
+      "path": "mission.md",
+      "id": "FLAGLITE-MISSION-001",
+      "version": "<artifact version>",
+      "sha256": "sha256:<64 lowercase hexadecimal characters>"
+    },
+    {
+      "path": "constitution.md",
+      "id": "FLAGLITE-CONSTITUTION-001",
+      "version": "<artifact version>",
+      "sha256": "sha256:<64 lowercase hexadecimal characters>"
+    },
+    {
+      "path": "specification.md",
+      "id": "FLAGLITE-SPEC-001",
+      "version": "<artifact version>",
+      "sha256": "sha256:<64 lowercase hexadecimal characters>"
+    },
+    {
+      "path": "backlog.md",
+      "id": "FLAGLITE-BACKLOG-001",
+      "version": "<artifact version>",
+      "sha256": "sha256:<64 lowercase hexadecimal characters>"
+    }
+  ],
+  "independent_review": {
+    "path": "reviews/FLAGLITE-REVIEW-REQ-001.md",
+    "id": "FLAGLITE-REVIEW-REQ-001",
+    "version": "<review version>",
+    "sha256": "sha256:<64 lowercase hexadecimal characters>",
+    "reviewer_mode": "independent",
+    "result": "PASS"
+  }
+}

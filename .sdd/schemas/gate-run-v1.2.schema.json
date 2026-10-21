@@ -1,0 +1,3865 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:adversarial-sdd:gate-run:1.2",
+  "title": "Adversarial SDD Gate Run Record v1.2",
+  "description": "Structural contract plus G-IMPL provider-attestation requirements; schema validity alone does not authenticate evidence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_id",
+    "record_version",
+    "contract_id",
+    "contract_version",
+    "application_id",
+    "repository",
+    "gate_id",
+    "created_at",
+    "source_snapshot",
+    "scope",
+    "gate_data",
+    "criteria_results",
+    "evidence",
+    "findings",
+    "authority",
+    "dependency_effects",
+    "gate_result",
+    "result_rationale",
+    "next_action",
+    "change_control"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9-]{2,79}$"
+    },
+    "record_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "contract_id": {
+      "const": "FRAMEWORK-GATE-CONTRACT-001"
+    },
+    "contract_version": {
+      "const": "1.2"
+    },
+    "application_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "repository": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "url_or_path",
+        "visibility"
+      ],
+      "properties": {
+        "url_or_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "visibility": {
+          "enum": [
+            "public",
+            "private",
+            "local-only",
+            "not-yet-created"
+          ]
+        }
+      }
+    },
+    "gate_id": {
+      "enum": [
+        "G-INTENT",
+        "G-SETUP",
+        "G-REQ",
+        "G-FEAS",
+        "G-COVERAGE",
+        "G-CX",
+        "G-ARCH",
+        "G-IMPL",
+        "G-RELEASE",
+        "G-OPERATE"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "supersedes_run_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Z][A-Z0-9-]{2,79}$"
+    },
+    "source_snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commit_sha",
+        "revision_state",
+        "uncommitted_reason",
+        "files"
+      ],
+      "properties": {
+        "commit_sha": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{40}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "revision_state": {
+          "enum": [
+            "clean-commit",
+            "dirty-working-tree",
+            "archive-pinned",
+            "not-yet-initialized"
+          ]
+        },
+        "uncommitted_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/artifact_ref"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "revision_state": {
+                "const": "clean-commit"
+              }
+            },
+            "required": [
+              "revision_state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "commit_sha": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{40}$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "revision_state": {
+                "enum": [
+                  "dirty-working-tree",
+                  "not-yet-initialized"
+                ]
+              }
+            },
+            "required": [
+              "revision_state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "uncommitted_reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirement_ids",
+        "task_ids",
+        "artifact_refs",
+        "surfaces",
+        "platforms",
+        "code_paths",
+        "environments",
+        "exclusions"
+      ],
+      "properties": {
+        "requirement_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "task_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "artifact_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/artifact_ref"
+          }
+        },
+        "surfaces": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "platforms": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "code_paths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "environments": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "exclusions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/exclusion"
+          }
+        }
+      }
+    },
+    "criteria_results": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/criterion_result"
+      }
+    },
+    "gate_data": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/g_intent"
+        },
+        {
+          "$ref": "#/$defs/g_setup"
+        },
+        {
+          "$ref": "#/$defs/g_req"
+        },
+        {
+          "$ref": "#/$defs/g_feas"
+        },
+        {
+          "$ref": "#/$defs/g_coverage"
+        },
+        {
+          "$ref": "#/$defs/g_cx"
+        },
+        {
+          "$ref": "#/$defs/g_arch"
+        },
+        {
+          "$ref": "#/$defs/g_impl"
+        },
+        {
+          "$ref": "#/$defs/g_release"
+        },
+        {
+          "$ref": "#/$defs/g_operate"
+        }
+      ]
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidence"
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/finding"
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "accountable_owner",
+        "reviewers",
+        "owner_decisions"
+      ],
+      "properties": {
+        "accountable_owner": {
+          "$ref": "#/$defs/person"
+        },
+        "reviewers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/reviewer"
+          }
+        },
+        "owner_decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/owner_decision"
+          }
+        }
+      }
+    },
+    "dependency_effects": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/dependency_effect"
+      }
+    },
+    "gate_result": {
+      "enum": [
+        "not-ready",
+        "in-progress",
+        "passed",
+        "failed",
+        "blocked",
+        "passed-with-accepted-risk",
+        "not-applicable"
+      ]
+    },
+    "result_rationale": {
+      "type": "string",
+      "minLength": 1
+    },
+    "accepted_risk": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/accepted_risk"
+        }
+      ]
+    },
+    "next_action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "owner",
+        "permitted",
+        "prohibited"
+      ],
+      "properties": {
+        "action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "permitted": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "prohibited": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "change_control": {
+      "$ref": "#/$defs/change_control"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "gate_result": {
+            "const": "passed-with-accepted-risk"
+          }
+        },
+        "required": [
+          "gate_result"
+        ]
+      },
+      "then": {
+        "required": [
+          "accepted_risk"
+        ],
+        "properties": {
+          "accepted_risk": {
+            "$ref": "#/$defs/accepted_risk"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gate_result": {
+            "const": "not-applicable"
+          }
+        },
+        "required": [
+          "gate_result"
+        ]
+      },
+      "then": {
+        "properties": {
+          "authority": {
+            "properties": {
+              "owner_decisions": {
+                "type": "array",
+                "minItems": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gate_result": {
+            "const": "passed"
+          }
+        },
+        "required": [
+          "gate_result"
+        ]
+      },
+      "then": {
+        "properties": {
+          "criteria_results": {
+            "items": {
+              "properties": {
+                "outcome": {
+                  "enum": [
+                    "pass",
+                    "not-applicable"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gate_result": {
+            "const": "failed"
+          }
+        },
+        "required": [
+          "gate_result"
+        ]
+      },
+      "then": {
+        "properties": {
+          "criteria_results": {
+            "contains": {
+              "properties": {
+                "outcome": {
+                  "const": "fail"
+                }
+              },
+              "required": [
+                "outcome"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gate_result": {
+            "const": "blocked"
+          }
+        },
+        "required": [
+          "gate_result"
+        ]
+      },
+      "then": {
+        "properties": {
+          "criteria_results": {
+            "contains": {
+              "properties": {
+                "outcome": {
+                  "const": "blocked"
+                }
+              },
+              "required": [
+                "outcome"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gate_result": {
+            "const": "not-ready"
+          }
+        },
+        "required": [
+          "gate_result"
+        ]
+      },
+      "then": {
+        "properties": {
+          "criteria_results": {
+            "items": {
+              "properties": {
+                "outcome": {
+                  "const": "not-checked"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gate_result": {
+            "const": "passed-with-accepted-risk"
+          }
+        },
+        "required": [
+          "gate_result"
+        ]
+      },
+      "then": {
+        "properties": {
+          "findings": {
+            "items": {
+              "properties": {
+                "blocking": {
+                  "const": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gate_id": {
+            "const": "G-INTENT"
+          }
+        },
+        "required": [
+          "gate_id"
+        ]
+      },
+      "then": {
+        "properties": {
+          "gate_data": {
+            "$ref": "#/$defs/g_intent"
+          },
+          "criteria_results": {
+            "allOf": [
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GINT-01"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GINT-02"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GINT-03"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gate_id": {
+            "const": "G-SETUP"
+          }
+        },
+        "required": [
+          "gate_id"
+        ]
+      },
+      "then": {
+        "properties": {
+          "gate_data": {
+            "$ref": "#/$defs/g_setup"
+          },
+          "criteria_results": {
+            "allOf": [
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GSET-01"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GSET-02"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GSET-03"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gate_id": {
+            "const": "G-REQ"
+          }
+        },
+        "required": [
+          "gate_id"
+        ]
+      },
+      "then": {
+        "properties": {
+          "gate_data": {
+            "$ref": "#/$defs/g_req"
+          },
+          "criteria_results": {
+            "allOf": [
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GREQ-01"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GREQ-02"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GREQ-03"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GREQ-04"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gate_id": {
+            "const": "G-FEAS"
+          }
+        },
+        "required": [
+          "gate_id"
+        ]
+      },
+      "then": {
+        "properties": {
+          "gate_data": {
+            "$ref": "#/$defs/g_feas"
+          },
+          "criteria_results": {
+            "allOf": [
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GFEAS-01"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GFEAS-02"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GFEAS-03"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gate_id": {
+            "const": "G-COVERAGE"
+          }
+        },
+        "required": [
+          "gate_id"
+        ]
+      },
+      "then": {
+        "properties": {
+          "gate_data": {
+            "$ref": "#/$defs/g_coverage"
+          },
+          "criteria_results": {
+            "allOf": [
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GCOV-01"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GCOV-02"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GCOV-03"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gate_id": {
+            "const": "G-CX"
+          }
+        },
+        "required": [
+          "gate_id"
+        ]
+      },
+      "then": {
+        "properties": {
+          "gate_data": {
+            "$ref": "#/$defs/g_cx"
+          },
+          "criteria_results": {
+            "allOf": [
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GCX-01"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GCX-02"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GCX-03"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gate_id": {
+            "const": "G-ARCH"
+          }
+        },
+        "required": [
+          "gate_id"
+        ]
+      },
+      "then": {
+        "properties": {
+          "gate_data": {
+            "$ref": "#/$defs/g_arch"
+          },
+          "criteria_results": {
+            "allOf": [
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GARCH-01"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GARCH-02"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GARCH-03"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gate_id": {
+            "const": "G-IMPL"
+          }
+        },
+        "required": [
+          "gate_id"
+        ]
+      },
+      "then": {
+        "properties": {
+          "gate_data": {
+            "$ref": "#/$defs/g_impl"
+          },
+          "criteria_results": {
+            "allOf": [
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GIMPL-01"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GIMPL-02"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GIMPL-03"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gate_id": {
+            "const": "G-RELEASE"
+          }
+        },
+        "required": [
+          "gate_id"
+        ]
+      },
+      "then": {
+        "properties": {
+          "gate_data": {
+            "$ref": "#/$defs/g_release",
+            "required": [
+              "release_window"
+            ]
+          },
+          "criteria_results": {
+            "allOf": [
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GREL-01"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GREL-02"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GREL-03"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gate_id": {
+            "const": "G-OPERATE"
+          }
+        },
+        "required": [
+          "gate_id"
+        ]
+      },
+      "then": {
+        "properties": {
+          "gate_data": {
+            "$ref": "#/$defs/g_operate"
+          },
+          "criteria_results": {
+            "allOf": [
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GOP-01"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GOP-02"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "criterion_id": {
+                      "const": "GOP-03"
+                    }
+                  },
+                  "required": [
+                    "criterion_id"
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gate_result": {
+            "const": "passed-with-accepted-risk"
+          }
+        },
+        "required": [
+          "gate_result"
+        ]
+      },
+      "then": {
+        "properties": {
+          "criteria_results": {
+            "items": {
+              "properties": {
+                "outcome": {
+                  "enum": [
+                    "pass",
+                    "fail",
+                    "not-applicable"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gate_result": {
+            "const": "not-applicable"
+          }
+        },
+        "required": [
+          "gate_result"
+        ]
+      },
+      "then": {
+        "properties": {
+          "scope": {
+            "properties": {
+              "exclusions": {
+                "type": "array",
+                "minItems": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gate_id": {
+            "const": "G-IMPL"
+          },
+          "gate_result": {
+            "enum": [
+              "passed",
+              "passed-with-accepted-risk"
+            ]
+          }
+        },
+        "required": [
+          "gate_id",
+          "gate_result"
+        ]
+      },
+      "then": {
+        "properties": {
+          "source_snapshot": {
+            "properties": {
+              "revision_state": {
+                "const": "clean-commit"
+              },
+              "commit_sha": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{40}$"
+              }
+            }
+          },
+          "gate_data": {
+            "$ref": "#/$defs/g_impl"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gate_id": {
+            "const": "G-RELEASE"
+          },
+          "gate_result": {
+            "enum": [
+              "passed",
+              "passed-with-accepted-risk"
+            ]
+          }
+        },
+        "required": [
+          "gate_id",
+          "gate_result"
+        ]
+      },
+      "then": {
+        "properties": {
+          "source_snapshot": {
+            "properties": {
+              "revision_state": {
+                "const": "clean-commit"
+              },
+              "commit_sha": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{40}$"
+              }
+            }
+          },
+          "gate_data": {
+            "$ref": "#/$defs/g_release",
+            "required": [
+              "release_window"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gate_id": {
+            "const": "G-IMPL"
+          },
+          "gate_result": {
+            "enum": [
+              "passed",
+              "passed-with-accepted-risk"
+            ]
+          }
+        },
+        "required": [
+          "gate_id",
+          "gate_result"
+        ]
+      },
+      "then": {
+        "properties": {
+          "gate_data": {
+            "properties": {
+              "selected_task_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "criterion_check_mappings": {
+                "type": "array",
+                "minItems": 1
+              },
+              "required_checks": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "properties": {
+                    "result": {
+                      "const": "passed"
+                    },
+                    "evidence_id": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              },
+              "review_evidence_ids": {
+                "type": "array",
+                "minItems": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "gate_id": {
+            "const": "G-RELEASE"
+          },
+          "gate_result": {
+            "enum": [
+              "passed",
+              "passed-with-accepted-risk"
+            ]
+          }
+        },
+        "required": [
+          "gate_id",
+          "gate_result"
+        ]
+      },
+      "then": {
+        "properties": {
+          "gate_data": {
+            "properties": {
+              "tested_commit_sha": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{40}$"
+              },
+              "artifact_sha256": {
+                "type": "string",
+                "pattern": "^sha256:[a-f0-9]{64}$"
+              },
+              "required_check_evidence_ids": {
+                "type": "array",
+                "minItems": 1
+              },
+              "support_owner": {
+                "type": "string",
+                "minLength": 1
+              },
+              "owner_authorization_id": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "release_window"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "g_intent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_user",
+        "problem",
+        "evidence_class",
+        "intended_outcome",
+        "success_signals",
+        "constraints",
+        "assumptions",
+        "non_goals",
+        "decision_owners"
+      ],
+      "properties": {
+        "target_user": {
+          "type": "string",
+          "minLength": 1
+        },
+        "problem": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_class": {
+          "enum": [
+            "observed",
+            "hypothesis",
+            "mixed"
+          ]
+        },
+        "intended_outcome": {
+          "type": "string",
+          "minLength": 1
+        },
+        "success_signals": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "signal",
+              "status",
+              "validation_plan"
+            ],
+            "properties": {
+              "signal": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "enum": [
+                  "measurable",
+                  "provisional"
+                ]
+              },
+              "validation_plan": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "assumption",
+              "owner",
+              "validation_plan"
+            ],
+            "properties": {
+              "assumption": {
+                "type": "string",
+                "minLength": 1
+              },
+              "owner": {
+                "type": "string",
+                "minLength": 1
+              },
+              "validation_plan": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "non_goals": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "decision_owners": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "g_setup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository_boundary",
+        "source_of_truth_map",
+        "owners_and_access",
+        "toolchain",
+        "cold_start_evidence_ids"
+      ],
+      "properties": {
+        "repository_boundary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_of_truth_map": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "artifact",
+              "canonical_path"
+            ],
+            "properties": {
+              "artifact": {
+                "type": "string",
+                "minLength": 1
+              },
+              "canonical_path": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "owners_and_access": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "owner",
+              "prerequisite",
+              "status"
+            ],
+            "properties": {
+              "owner": {
+                "type": "string",
+                "minLength": 1
+              },
+              "prerequisite": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "enum": [
+                  "ready",
+                  "blocked",
+                  "not-applicable"
+                ]
+              }
+            }
+          }
+        },
+        "toolchain": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "tool",
+              "version"
+            ],
+            "properties": {
+              "tool": {
+                "type": "string",
+                "minLength": 1
+              },
+              "version": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "cold_start_evidence_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "g_req": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirement_ids",
+        "decision_ids",
+        "task_ids",
+        "scope_in",
+        "scope_out",
+        "review_evidence_ids",
+        "unresolved_blockers"
+      ],
+      "properties": {
+        "requirement_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "decision_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "task_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "scope_in": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "scope_out": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "review_evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unresolved_blockers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "g_feas": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "probes"
+      ],
+      "properties": {
+        "probes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "probe_id",
+              "domain",
+              "question",
+              "evidence_needed",
+              "source_or_plan",
+              "observed_at",
+              "classification",
+              "confidence",
+              "limitations",
+              "requirement_ids",
+              "task_dependencies",
+              "owner",
+              "status",
+              "negative_result_consequence",
+              "next_action"
+            ],
+            "properties": {
+              "probe_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "domain": {
+                "enum": [
+                  "data-rights",
+                  "provider-coverage",
+                  "legal-privacy",
+                  "identity-security",
+                  "platform",
+                  "performance",
+                  "cost",
+                  "operations-support",
+                  "recovery",
+                  "other"
+                ]
+              },
+              "question": {
+                "type": "string",
+                "minLength": 1
+              },
+              "evidence_needed": {
+                "type": "string",
+                "minLength": 1
+              },
+              "source_or_plan": {
+                "type": "string",
+                "minLength": 1
+              },
+              "observed_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "classification": {
+                "enum": [
+                  "supported",
+                  "constrained",
+                  "unsupported",
+                  "unknown"
+                ]
+              },
+              "confidence": {
+                "enum": [
+                  "high",
+                  "medium",
+                  "low",
+                  "none"
+                ]
+              },
+              "limitations": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              },
+              "requirement_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "task_dependencies": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "task_id",
+                    "state",
+                    "condition",
+                    "safe_work_boundary"
+                  ],
+                  "properties": {
+                    "task_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "state": {
+                      "enum": [
+                        "blocked",
+                        "unblocked",
+                        "conditional"
+                      ]
+                    },
+                    "condition": {
+                      "type": "string"
+                    },
+                    "safe_work_boundary": {
+                      "type": "string"
+                    },
+                    "state_change_trigger": {
+                      "type": "string"
+                    }
+                  },
+                  "allOf": [
+                    {
+                      "if": {
+                        "properties": {
+                          "state": {
+                            "const": "conditional"
+                          }
+                        },
+                        "required": [
+                          "state"
+                        ]
+                      },
+                      "then": {
+                        "required": [
+                          "state_change_trigger"
+                        ],
+                        "properties": {
+                          "state_change_trigger": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "owner": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "enum": [
+                  "open",
+                  "in-progress",
+                  "evidence-recorded",
+                  "decision-required",
+                  "closed"
+                ]
+              },
+              "negative_result_consequence": {
+                "type": "string",
+                "minLength": 1
+              },
+              "next_action": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "g_coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "journeys",
+        "platform_applicability",
+        "failure_mode_applicability"
+      ],
+      "properties": {
+        "journeys": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "journey_id",
+              "requirement_ids",
+              "actor",
+              "preconditions",
+              "transitions",
+              "success_exit",
+              "failure_exits",
+              "recovery_paths"
+            ],
+            "properties": {
+              "journey_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "requirement_ids": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              },
+              "actor": {
+                "type": "string",
+                "minLength": 1
+              },
+              "preconditions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "transitions": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              },
+              "success_exit": {
+                "type": "string",
+                "minLength": 1
+              },
+              "failure_exits": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              },
+              "recovery_paths": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "platform_applicability": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "surface",
+              "platform",
+              "applicable",
+              "rationale"
+            ],
+            "properties": {
+              "surface": {
+                "type": "string",
+                "minLength": 1
+              },
+              "platform": {
+                "type": "string",
+                "minLength": 1
+              },
+              "applicable": {
+                "type": "boolean"
+              },
+              "rationale": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "failure_mode_applicability": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "category",
+              "applicable",
+              "rationale"
+            ],
+            "properties": {
+              "category": {
+                "enum": [
+                  "empty",
+                  "malformed-or-corrupt",
+                  "unavailable",
+                  "unauthorized",
+                  "degraded",
+                  "abuse",
+                  "recovery"
+                ]
+              },
+              "applicable": {
+                "type": "boolean"
+              },
+              "rationale": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "g_cx": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "frozen_scope_ref",
+        "interaction_evidence_ids",
+        "evaluator",
+        "method",
+        "tool_version",
+        "limitations",
+        "finding_ids",
+        "rerun_ids"
+      ],
+      "properties": {
+        "frozen_scope_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "interaction_evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "evaluator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "method": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tool_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "finding_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rerun_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "g_arch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "system_boundaries",
+        "trust_boundaries",
+        "identities_and_tenants",
+        "data_contracts",
+        "integrations_and_failures",
+        "security_privacy",
+        "operations_recovery",
+        "adrs",
+        "verification_contracts",
+        "backlog_task_ids"
+      ],
+      "properties": {
+        "system_boundaries": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "trust_boundaries": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "identities_and_tenants": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "data_contracts": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "integrations_and_failures": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "security_privacy": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "operations_recovery": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "adrs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "verification_contracts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "contract",
+              "method",
+              "evidence_id"
+            ],
+            "properties": {
+              "contract": {
+                "type": "string",
+                "minLength": 1
+              },
+              "method": {
+                "type": "string",
+                "minLength": 1
+              },
+              "evidence_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "backlog_task_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "g_impl": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "selected_task_id",
+        "criterion_check_mappings",
+        "required_checks",
+        "review_evidence_ids"
+      ],
+      "properties": {
+        "selected_task_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "criterion_check_mappings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "criterion_id",
+              "check_ids",
+              "manual_method"
+            ],
+            "properties": {
+              "criterion_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "check_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "manual_method": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        },
+        "required_checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "check_id",
+              "command_or_procedure",
+              "tool_runtime_version",
+              "source_revision",
+              "scope",
+              "pass_condition",
+              "result",
+              "evidence_id"
+            ],
+            "properties": {
+              "check_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "command_or_procedure": {
+                "type": "string",
+                "minLength": 1
+              },
+              "tool_runtime_version": {
+                "type": "string",
+                "minLength": 1
+              },
+              "source_revision": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{40}$"
+              },
+              "scope": {
+                "type": "string",
+                "minLength": 1
+              },
+              "pass_condition": {
+                "type": "string",
+                "minLength": 1
+              },
+              "result": {
+                "enum": [
+                  "passed",
+                  "failed",
+                  "blocked",
+                  "not-run"
+                ]
+              },
+              "evidence_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "review_evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "g_release": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tested_commit_sha",
+        "artifact_sha256",
+        "environment",
+        "required_check_evidence_ids",
+        "security_accessibility_platform_evidence_ids",
+        "migration_backup_rollback_plan",
+        "support_owner",
+        "owner_authorization_id",
+        "post_release_checks"
+      ],
+      "properties": {
+        "tested_commit_sha": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{40}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "artifact_sha256": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^sha256:[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "environment": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required_check_evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "security_accessibility_platform_evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "migration_backup_rollback_plan": {
+          "type": "string",
+          "minLength": 1
+        },
+        "support_owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner_authorization_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "post_release_checks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "release_window": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "g_operate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operator",
+        "escalation_owner",
+        "runbook_evidence_ids",
+        "health_signals",
+        "telemetry_gaps",
+        "degradation_limits",
+        "incident_ids",
+        "outcome_records",
+        "learning_task_ids"
+      ],
+      "properties": {
+        "operator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "escalation_owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "runbook_evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "health_signals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "telemetry_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "degradation_limits": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "condition",
+              "threshold",
+              "response"
+            ],
+            "properties": {
+              "condition": {
+                "type": "string",
+                "minLength": 1
+              },
+              "threshold": {
+                "type": "string",
+                "minLength": 1
+              },
+              "response": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "incident_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "outcome_records": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "learning_task_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "artifact_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "version",
+        "path",
+        "sha256",
+        "source_revision"
+      ],
+      "properties": {
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "source_revision": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{40}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "exclusion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "item",
+        "reason",
+        "authority",
+        "downstream_effect"
+      ],
+      "properties": {
+        "item": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "authority": {
+          "type": "string",
+          "minLength": 1
+        },
+        "downstream_effect": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "criterion_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "criterion_id",
+        "outcome",
+        "evidence_ids",
+        "rationale",
+        "finding_ids",
+        "owner_decision_ids"
+      ],
+      "properties": {
+        "criterion_id": {
+          "type": "string",
+          "pattern": "^G[A-Z]+-[0-9]{2}$"
+        },
+        "outcome": {
+          "enum": [
+            "pass",
+            "fail",
+            "blocked",
+            "not-applicable",
+            "not-checked"
+          ]
+        },
+        "evidence_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "finding_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "owner_decision_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "enum": [
+                  "pass",
+                  "fail"
+                ]
+              }
+            },
+            "required": [
+              "outcome"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence_ids": {
+                "type": "array",
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "const": "not-applicable"
+              }
+            },
+            "required": [
+              "outcome"
+            ]
+          },
+          "then": {
+            "properties": {
+              "owner_decision_ids": {
+                "type": "array",
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_id",
+        "type",
+        "criterion_ids",
+        "observed_at",
+        "observed_by",
+        "source_revision",
+        "scope_ref",
+        "locator",
+        "record_sha256",
+        "limitations",
+        "details"
+      ],
+      "properties": {
+        "evidence_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "enum": [
+            "artifact-reference",
+            "command-execution",
+            "ci-run",
+            "external-source",
+            "interaction-capture",
+            "owner-decision",
+            "review-finding",
+            "runtime-measurement",
+            "operational-record",
+            "manual-observation"
+          ]
+        },
+        "criterion_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "observed_by": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_revision": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{40}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scope_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "record_sha256": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "details": {
+          "type": "object",
+          "minProperties": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "artifact-reference"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "details": {
+                "required": [
+                  "artifact_id",
+                  "version",
+                  "path",
+                  "sha256"
+                ],
+                "properties": {
+                  "artifact_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "version": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "path": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "sha256": {
+                    "type": "string",
+                    "pattern": "^sha256:[a-f0-9]{64}$"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "command-execution"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "details": {
+                "required": [
+                  "command",
+                  "exit_code",
+                  "stdout_ref",
+                  "stderr_ref",
+                  "runtime_versions",
+                  "started_at",
+                  "completed_at",
+                  "scope"
+                ],
+                "properties": {
+                  "command": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "exit_code": {
+                    "type": "integer"
+                  },
+                  "stdout_ref": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "stderr_ref": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "runtime_versions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "started_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "completed_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "scope": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "tool_runtime_version": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "pass_condition": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "ci-run"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "details": {
+                "required": [
+                  "provider",
+                  "run_id_or_url",
+                  "commit_sha",
+                  "workflow_job",
+                  "conclusion",
+                  "scope"
+                ],
+                "properties": {
+                  "provider": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "run_id_or_url": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "commit_sha": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{40}$"
+                  },
+                  "workflow_job": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "conclusion": {
+                    "enum": [
+                      "success",
+                      "failure",
+                      "cancelled",
+                      "skipped",
+                      "in-progress"
+                    ]
+                  },
+                  "scope": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "tool_runtime_version": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "pass_condition": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "check_name": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "attestation": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "report_path",
+                      "report_sha256",
+                      "manifest_sha256"
+                    ],
+                    "properties": {
+                      "report_path": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "report_sha256": {
+                        "type": "string",
+                        "pattern": "^sha256:[a-f0-9]{64}$"
+                      },
+                      "manifest_sha256": {
+                        "type": "string",
+                        "pattern": "^sha256:[a-f0-9]{64}$"
+                      }
+                    }
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "external-source"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "details": {
+                "required": [
+                  "publisher",
+                  "title",
+                  "url_or_archive",
+                  "published_at",
+                  "accessed_at",
+                  "excerpt_location",
+                  "relevance",
+                  "limits"
+                ],
+                "properties": {
+                  "publisher": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "url_or_archive": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "published_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "accessed_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "excerpt_location": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "relevance": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "limits": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "interaction-capture"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "details": {
+                "required": [
+                  "target_ref",
+                  "capture_method",
+                  "tool_version",
+                  "viewport_or_device",
+                  "runtime",
+                  "captured_at",
+                  "limitations"
+                ],
+                "properties": {
+                  "target_ref": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "capture_method": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "tool_version": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "viewport_or_device": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "runtime": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "captured_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "limitations": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "owner-decision"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "details": {
+                "required": [
+                  "decision_maker",
+                  "role",
+                  "decision",
+                  "affected_ids",
+                  "rationale",
+                  "decided_at",
+                  "revisit_condition"
+                ],
+                "properties": {
+                  "decision_maker": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "role": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "decision": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "affected_ids": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "rationale": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "decided_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "revisit_condition": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "review-finding"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "details": {
+                "required": [
+                  "reviewer",
+                  "mode",
+                  "author_overlap",
+                  "context_disclosure",
+                  "finding_id",
+                  "severity",
+                  "location",
+                  "disposition"
+                ],
+                "properties": {
+                  "reviewer": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "mode": {
+                    "enum": [
+                      "independent",
+                      "peer",
+                      "self",
+                      "automated",
+                      "not-applicable"
+                    ]
+                  },
+                  "author_overlap": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "context_disclosure": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "finding_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "severity": {
+                    "enum": [
+                      "critical",
+                      "major",
+                      "moderate",
+                      "minor",
+                      "informational"
+                    ]
+                  },
+                  "location": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "disposition": {
+                    "enum": [
+                      "open",
+                      "fixed",
+                      "accepted-risk",
+                      "not-applicable"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "runtime-measurement"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "details": {
+                "required": [
+                  "metric",
+                  "method",
+                  "tool_version",
+                  "environment",
+                  "sample_window",
+                  "raw_result",
+                  "threshold",
+                  "limitations"
+                ],
+                "properties": {
+                  "metric": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "method": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "tool_version": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "environment": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "sample_window": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "raw_result": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "threshold": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "limitations": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "operational-record"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "details": {
+                "required": [
+                  "operator_or_system",
+                  "time_window",
+                  "source_method",
+                  "completeness",
+                  "telemetry_gaps",
+                  "record_link"
+                ],
+                "properties": {
+                  "operator_or_system": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "time_window": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "source_method": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "completeness": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "telemetry_gaps": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "record_link": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "manual-observation"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "details": {
+                "required": [
+                  "observer",
+                  "procedure",
+                  "observed_at",
+                  "scope",
+                  "result",
+                  "limitations"
+                ],
+                "properties": {
+                  "observer": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "procedure": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "observed_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "scope": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "result": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "limitations": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "finding_id",
+        "severity",
+        "blocking",
+        "location",
+        "impact",
+        "disposition",
+        "owner_decision_required"
+      ],
+      "properties": {
+        "finding_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "severity": {
+          "enum": [
+            "critical",
+            "major",
+            "moderate",
+            "minor",
+            "informational"
+          ]
+        },
+        "blocking": {
+          "type": "boolean"
+        },
+        "location": {
+          "type": "string",
+          "minLength": 1
+        },
+        "impact": {
+          "type": "string",
+          "minLength": 1
+        },
+        "disposition": {
+          "enum": [
+            "open",
+            "fixed",
+            "accepted-risk",
+            "not-applicable"
+          ]
+        },
+        "owner_decision_required": {
+          "type": "boolean"
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "person": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identity",
+        "role"
+      ],
+      "properties": {
+        "identity": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "reviewer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identity",
+        "role",
+        "mode",
+        "author_overlap",
+        "context_disclosure",
+        "limitations",
+        "result"
+      ],
+      "properties": {
+        "identity": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mode": {
+          "enum": [
+            "independent",
+            "peer",
+            "self",
+            "automated",
+            "not-applicable"
+          ]
+        },
+        "author_overlap": {
+          "type": "string",
+          "minLength": 1
+        },
+        "context_disclosure": {
+          "type": "string",
+          "minLength": 1
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "result": {
+          "enum": [
+            "pass",
+            "findings",
+            "inconclusive",
+            "not-applicable"
+          ]
+        }
+      }
+    },
+    "owner_decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_id",
+        "decision_maker",
+        "role",
+        "decided_at",
+        "choice",
+        "affected_ids",
+        "rationale",
+        "revisit_condition"
+      ],
+      "properties": {
+        "decision_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "decision_maker": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "decided_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "choice": {
+          "type": "string",
+          "minLength": 1
+        },
+        "affected_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revisit_condition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "authorized_artifact_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "authorized_environment": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "authorized_release_window": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      }
+    },
+    "dependency_effect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "task_id",
+        "state",
+        "condition",
+        "safe_work_boundary"
+      ],
+      "properties": {
+        "task_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "state": {
+          "enum": [
+            "blocked",
+            "conditional",
+            "unblocked",
+            "not-applicable"
+          ]
+        },
+        "condition": {
+          "type": "string"
+        },
+        "safe_work_boundary": {
+          "type": "string"
+        },
+        "state_change_trigger": {
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "conditional"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "condition": {
+                "type": "string",
+                "minLength": 1
+              },
+              "safe_work_boundary": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "conditional"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "required": [
+              "state_change_trigger"
+            ],
+            "properties": {
+              "state_change_trigger": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "accepted_risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "finding_ids",
+        "owner_decision_id",
+        "risk",
+        "impact",
+        "mitigation",
+        "expires_at",
+        "revisit_condition"
+      ],
+      "properties": {
+        "finding_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "owner_decision_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "risk": {
+          "type": "string",
+          "minLength": 1
+        },
+        "impact": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mitigation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "revisit_condition": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "change_control": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commit_sha",
+        "branch_ref",
+        "remote",
+        "push_result",
+        "ci_runs",
+        "release_artifact_sha256",
+        "authorization_ref"
+      ],
+      "properties": {
+        "commit_sha": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{40}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "branch_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "remote": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "push_result": {
+          "enum": [
+            "pushed",
+            "not-pushed",
+            "failed",
+            "not-applicable"
+          ]
+        },
+        "ci_runs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ci_ref"
+          }
+        },
+        "release_artifact_sha256": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^sha256:[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "authorization_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "not_applicable_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "push_result": {
+                "const": "pushed"
+              }
+            },
+            "required": [
+              "push_result"
+            ]
+          },
+          "then": {
+            "properties": {
+              "commit_sha": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{40}$"
+              },
+              "branch_ref": {
+                "type": "string",
+                "minLength": 1
+              },
+              "remote": {
+                "type": "string",
+                "minLength": 1
+              },
+              "authorization_ref": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "push_result": {
+                "const": "not-applicable"
+              }
+            },
+            "required": [
+              "push_result"
+            ]
+          },
+          "then": {
+            "properties": {
+              "not_applicable_reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ci_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "run_id_or_url",
+        "commit_sha",
+        "check",
+        "status",
+        "scope"
+      ],
+      "properties": {
+        "provider": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id_or_url": {
+          "type": "string",
+          "minLength": 1
+        },
+        "commit_sha": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "check": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "passed",
+            "failed",
+            "cancelled",
+            "skipped",
+            "pending"
+          ]
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

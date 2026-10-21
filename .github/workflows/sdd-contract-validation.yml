@@ -1,0 +1,43 @@
+name: SDD Contract Validation
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sdd-contract-validation:
+    name: SDD Contract Validation
+    runs-on: ubuntu-latest
+    steps:
+      # actions/checkout v7.0.1
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      # actions/setup-python v7.0.0
+      - name: Set up Python 3.13
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.13"
+
+      - name: Validate SDD artifacts and gate handoffs
+        run: python3 scripts/artifacts.py validate
+
+  run-trusted-required-checks:
+    name: Run trusted required checks
+    needs: sdd-contract-validation
+    if: needs.sdd-contract-validation.result == 'success'
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+      artifact-metadata: write
+    uses: naelmusleh/adversarial-sdd-boilerplate/.github/workflows/sdd-trusted-ci-attest.yml@484c4cc3c7d1c0962439d11197fc09473845c163
+    with:
+      framework-repository: naelmusleh/adversarial-sdd-boilerplate
+      framework-revision: 484c4cc3c7d1c0962439d11197fc09473845c163

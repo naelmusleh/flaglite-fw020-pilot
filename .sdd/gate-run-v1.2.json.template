@@ -1,0 +1,121 @@
+{
+  "record_id": "FLAGLITE-GATE-RUN-INTENT-001",
+  "record_version": 1,
+  "contract_id": "FRAMEWORK-GATE-CONTRACT-001",
+  "contract_version": "1.2",
+  "application_id": "FLAGLITE",
+  "repository": {
+    "url_or_path": "<repository URL or local path>",
+    "visibility": "local-only"
+  },
+  "gate_id": "G-INTENT",
+  "created_at": "2000-01-01T00:00:00Z",
+  "supersedes_run_id": null,
+  "source_snapshot": {
+    "commit_sha": null,
+    "revision_state": "not-yet-initialized",
+    "uncommitted_reason": "Replace this starter with the actual source revision and frozen file digests.",
+    "files": []
+  },
+  "scope": {
+    "requirement_ids": [],
+    "task_ids": [],
+    "artifact_refs": [],
+    "surfaces": [],
+    "platforms": [],
+    "code_paths": [],
+    "environments": [],
+    "exclusions": []
+  },
+  "gate_data": {
+    "target_user": "<target user>",
+    "problem": "<problem statement>",
+    "evidence_class": "hypothesis",
+    "intended_outcome": "<intended outcome>",
+    "success_signals": [
+      {
+        "signal": "<measurable or explicitly provisional signal>",
+        "status": "provisional",
+        "validation_plan": "<owner, evidence, and validation date or trigger>"
+      }
+    ],
+    "constraints": [
+      "<hard constraint>"
+    ],
+    "assumptions": [
+      {
+        "assumption": "<assumption>",
+        "owner": "<accountable owner>",
+        "validation_plan": "<how and when it will be checked>"
+      }
+    ],
+    "non_goals": [
+      "<explicitly excluded capability>"
+    ],
+    "decision_owners": [
+      "<decision owner>"
+    ]
+  },
+  "criteria_results": [
+    {
+      "criterion_id": "GINT-01",
+      "outcome": "not-checked",
+      "evidence_ids": [],
+      "rationale": "Starter template only; no assessment is asserted.",
+      "finding_ids": [],
+      "owner_decision_ids": []
+    },
+    {
+      "criterion_id": "GINT-02",
+      "outcome": "not-checked",
+      "evidence_ids": [],
+      "rationale": "Starter template only; no assessment is asserted.",
+      "finding_ids": [],
+      "owner_decision_ids": []
+    },
+    {
+      "criterion_id": "GINT-03",
+      "outcome": "not-checked",
+      "evidence_ids": [],
+      "rationale": "Starter template only; no assessment is asserted.",
+      "finding_ids": [],
+      "owner_decision_ids": []
+    }
+  ],
+  "evidence": [],
+  "findings": [],
+  "authority": {
+    "accountable_owner": {
+      "identity": "<owner identity>",
+      "role": "product owner"
+    },
+    "reviewers": [],
+    "owner_decisions": []
+  },
+  "dependency_effects": [],
+  "gate_result": "not-ready",
+  "result_rationale": "Starter template only. Replace all placeholders and collect evidence before assessment.",
+  "accepted_risk": null,
+  "next_action": {
+    "action": "Complete and review the G-INTENT input record.",
+    "owner": "<accountable owner>",
+    "permitted": [
+      "intent-discovery"
+    ],
+    "prohibited": [
+      "implementation",
+      "release",
+      "deployment"
+    ]
+  },
+  "change_control": {
+    "commit_sha": null,
+    "branch_ref": null,
+    "remote": null,
+    "push_result": "not-applicable",
+    "ci_runs": [],
+    "release_artifact_sha256": null,
+    "authorization_ref": null,
+    "not_applicable_reason": "Starter template; no application repository or remote state is asserted."
+  }
+}
