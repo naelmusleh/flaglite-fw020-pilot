@@ -39,3 +39,6 @@ Group tasks by reviewable outcome and lifecycle gate. Mark milestone evidence an
 ## Deferred and rejected work
 
 Record material deferrals/rejections and their rationale, decision owner, and reconsideration trigger.
+
+## Synthetic validator fixture tasks (not product work)
+- FIXTURE-TASK-001: Disposable FW020 structural reference only.

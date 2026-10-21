@@ -61,3 +61,6 @@ Use stable IDs (`D-...`). For each: unresolved question, viable options, impact,
 ## Traceability
 
 Link to `constitution.md`, `design.md`, `backlog.md`, decision log, research, and review records. Do not duplicate canonical content maintained in those artifacts.
+
+## Synthetic validator fixture IDs (not product requirements)
+- FIXTURE-REQ-001: Disposable FW020 structural reference only.
