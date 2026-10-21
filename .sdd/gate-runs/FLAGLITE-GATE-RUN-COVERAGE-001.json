@@ -1,0 +1,188 @@
+{
+  "record_id": "FLAGLITE-GATE-RUN-COVERAGE-001",
+  "record_version": 1,
+  "contract_id": "FRAMEWORK-GATE-CONTRACT-001",
+  "contract_version": "1.2",
+  "application_id": "FLAGLITE",
+  "repository": {
+    "url_or_path": "/var/folders/_h/44wn6dp550ng8y7gpbnsm72m0000gn/T/fw020-flaglite-hjj4poqq/flaglite",
+    "visibility": "local-only"
+  },
+  "gate_id": "G-COVERAGE",
+  "created_at": "2026-10-20T12:00:00Z",
+  "supersedes_run_id": null,
+  "source_snapshot": {
+    "commit_sha": "25ee4f4fda89e880f7a55e2c12ed9d2c52081cdd",
+    "revision_state": "clean-commit",
+    "uncommitted_reason": null,
+    "files": [
+      {
+        "artifact_id": "FIXTURE-INPUT-001",
+        "version": "1.0",
+        "path": "docs/framework/examples/gate-contract-v1/inputs/FIXTURE-INPUT-001.md",
+        "sha256": "sha256:dc89fc36088807eacb40e000e17867e818244821ec02126db42a6d1cb6abba8d",
+        "source_revision": "25ee4f4fda89e880f7a55e2c12ed9d2c52081cdd"
+      }
+    ]
+  },
+  "scope": {
+    "requirement_ids": [
+      "FIXTURE-REQ-001"
+    ],
+    "task_ids": [
+      "FIXTURE-TASK-001"
+    ],
+    "artifact_refs": [
+      {
+        "artifact_id": "FIXTURE-INPUT-001",
+        "version": "1.0",
+        "path": "docs/framework/examples/gate-contract-v1/inputs/FIXTURE-INPUT-001.md",
+        "sha256": "sha256:dc89fc36088807eacb40e000e17867e818244821ec02126db42a6d1cb6abba8d",
+        "source_revision": "25ee4f4fda89e880f7a55e2c12ed9d2c52081cdd"
+      }
+    ],
+    "surfaces": [
+      "synthetic"
+    ],
+    "platforms": [
+      "fixture"
+    ],
+    "code_paths": [],
+    "environments": [
+      "schema-fixture"
+    ],
+    "exclusions": []
+  },
+  "gate_data": {
+    "journeys": [
+      {
+        "journey_id": "FIXTURE-JOURNEY-001",
+        "requirement_ids": [
+          "FIXTURE-REQ-001"
+        ],
+        "actor": "synthetic actor",
+        "preconditions": [
+          "fixture"
+        ],
+        "transitions": [
+          "start",
+          "failure"
+        ],
+        "success_exit": "not asserted",
+        "failure_exits": [
+          "synthetic failure"
+        ],
+        "recovery_paths": [
+          "synthetic recovery"
+        ]
+      }
+    ],
+    "platform_applicability": [
+      {
+        "surface": "synthetic",
+        "platform": "fixture",
+        "applicable": false,
+        "rationale": "fixture only; no product surface"
+      }
+    ],
+    "failure_mode_applicability": [
+      {
+        "category": "empty",
+        "applicable": false,
+        "rationale": "Synthetic fixture; no real product scope."
+      },
+      {
+        "category": "malformed-or-corrupt",
+        "applicable": false,
+        "rationale": "Synthetic fixture; no real product scope."
+      },
+      {
+        "category": "unavailable",
+        "applicable": false,
+        "rationale": "Synthetic fixture; no real product scope."
+      },
+      {
+        "category": "unauthorized",
+        "applicable": false,
+        "rationale": "Synthetic fixture; no real product scope."
+      },
+      {
+        "category": "degraded",
+        "applicable": false,
+        "rationale": "Synthetic fixture; no real product scope."
+      },
+      {
+        "category": "abuse",
+        "applicable": false,
+        "rationale": "Synthetic fixture; no real product scope."
+      },
+      {
+        "category": "recovery",
+        "applicable": false,
+        "rationale": "Synthetic fixture; no real product scope."
+      }
+    ]
+  },
+  "criteria_results": [
+    {
+      "criterion_id": "GCOV-01",
+      "outcome": "not-checked",
+      "evidence_ids": [],
+      "rationale": "Synthetic structural fixture; no criterion assessment or gate pass is asserted.",
+      "finding_ids": [],
+      "owner_decision_ids": []
+    },
+    {
+      "criterion_id": "GCOV-02",
+      "outcome": "not-checked",
+      "evidence_ids": [],
+      "rationale": "Synthetic structural fixture; no criterion assessment or gate pass is asserted.",
+      "finding_ids": [],
+      "owner_decision_ids": []
+    },
+    {
+      "criterion_id": "GCOV-03",
+      "outcome": "not-checked",
+      "evidence_ids": [],
+      "rationale": "Synthetic structural fixture; no criterion assessment or gate pass is asserted.",
+      "finding_ids": [],
+      "owner_decision_ids": []
+    }
+  ],
+  "evidence": [],
+  "findings": [],
+  "authority": {
+    "accountable_owner": {
+      "identity": "fixture-owner",
+      "role": "synthetic fixture only"
+    },
+    "reviewers": [],
+    "owner_decisions": []
+  },
+  "dependency_effects": [],
+  "gate_result": "in-progress",
+  "result_rationale": "Schema-conforming fixture only; not application evidence or gate approval.",
+  "accepted_risk": null,
+  "next_action": {
+    "action": "Run fixture validation only.",
+    "owner": "fixture-maintainer",
+    "permitted": [
+      "schema-fixture-validation"
+    ],
+    "prohibited": [
+      "gate-approval",
+      "product-implementation",
+      "release"
+    ]
+  },
+  "change_control": {
+    "commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "branch_ref": "refs/heads/synthetic-fixture",
+    "remote": null,
+    "push_result": "not-applicable",
+    "ci_runs": [],
+    "release_artifact_sha256": null,
+    "authorization_ref": null,
+    "not_applicable_reason": "Synthetic fixture; no Git remote or release exists."
+  }
+}
