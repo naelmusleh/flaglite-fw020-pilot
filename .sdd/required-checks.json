@@ -1,5 +1,28 @@
 {
   "manifest_version": 1,
-  "status": "unconfigured",
-  "checks": []
+  "status": "active",
+  "checks": [
+    {
+      "check_id": "FW020-APP-VALIDATE",
+      "execution": "ci",
+      "required": true,
+      "task_ids": [
+        "FIXTURE-TASK-001"
+      ],
+      "acceptance_criteria": [
+        "FW020-APP-CHECK-001"
+      ],
+      "platforms": [
+        "github-actions-linux"
+      ],
+      "command_or_procedure": "python3 scripts/artifacts.py validate",
+      "runtime_probe": "python3 --version",
+      "scope_paths": [
+        "scripts/artifacts.py",
+        ".sdd/gate-runs"
+      ],
+      "pass_condition": "exit_code == 0",
+      "evidence_location": "delivery/verification/fw020-required-checks.json"
+    }
+  ]
 }
